@@ -79,11 +79,13 @@ def search(request: PinRequest, db: Session = Depends(get_db)):
     faiss.normalize_L2(query)
 
     # Search top 3 matches
-    distances, indices = index.search(query, k=3)
+    distances, indices = index.search(query, k=10)
 
     # Build results
     results = []
     for i, idx in enumerate(indices[0]):
+        if distances[0][i] < 0.5:  # skip if less than 50% similar
+            break
         listing = listings[idx]
         results.append({
             "id": listing.id,
