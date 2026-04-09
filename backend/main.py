@@ -8,6 +8,8 @@ import faiss
 import numpy as np
 from sqlalchemy.orm import Session
 from database import get_db, Listing
+from scraper import get_listing_info
+
 
 app = FastAPI()
 
@@ -75,3 +77,50 @@ def search(request: PinRequest, db: Session = Depends(get_db)):
         })
 
     return {"results": results}
+
+
+class ListingRequest(BaseModel):
+    listing_url: str
+    platform: str
+    
+@app.post("/listings")
+def add_listing(request: ListingRequest, db: Session = Depends(get_db)):
+    try:
+        # Scrape listing info
+        info = get_listing_info(request.listing_url)
+        
+        if not info["image_url"]:
+            return {"error": "Could not extract image from listing"}
+        
+        # Generate embedding
+        response = requests.get(info["image_url"])
+        image = Image.open(BytesIO(response.content))
+        inputs = processor(images=image, return_tensors="pt")
+        embedding = model.vision_model(**inputs).pooler_output
+        embedding_list = embedding.detach().numpy().squeeze().tolist()
+        
+        # Save to database
+        listing = Listing(
+            title=info["title"],
+            price=info["price"],
+            platform=request.platform,
+            link=request.listing_url,
+            image_url=info["image_url"],
+            embedding=embedding_list
+        )
+        db.add(listing)
+        db.commit()
+        db.refresh(listing)
+        
+        return {
+            "message": "Listing added successfully",
+            "listing": {
+                "id": listing.id,
+                "title": listing.title,
+                "price": listing.price,
+                "platform": listing.platform,
+                "image_url": listing.image_url,
+            }
+        }
+    except Exception as e:
+        return {"error": str(e)}
