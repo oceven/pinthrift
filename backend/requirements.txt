@@ -52,3 +52,4 @@ tzdata==2025.2
 fastapi==0.115.0
 uvicorn==0.34.0
 requests==2.32.3
+faiss-cpu==1.7.4
