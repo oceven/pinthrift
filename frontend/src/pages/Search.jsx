@@ -6,36 +6,41 @@ function Search() {
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [searched, setSearched] = useState(false)
 
   const handleSearch = async () => {
     if (!url) return
     setLoading(true)
     setError(null)
     setResults([])
+    setSearched(false)
     try {
       const response = await axios.post('http://127.0.0.1:8000/search', {
         image_url: url
       })
       setResults(response.data.results)
+      setSearched(true)
     } catch (err) {
-      setError('Something went wrong. Make sure the URL is a direct image link.')
+      setError('Something went wrong. Make sure the URL is a valid Pinterest pin or image URL.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
+    <div style={{ maxWidth: '960px', margin: '0 auto', padding: '40px 24px' }}>
       <h1 style={{ fontSize: '28px', marginBottom: '8px' }}>Find it secondhand</h1>
       <p style={{ color: '#666', marginBottom: '32px' }}>
-        Paste a Pinterest image URL to find similar items on secondhand platforms
+        Paste a Pinterest pin URL to find similar items on secondhand platforms
       </p>
+
       <div style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
         <input
           type="text"
-          placeholder="Paste a Pinterest image URL..."
+          placeholder="Paste a Pinterest pin URL..."
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           style={{ flex: 1, padding: '12px 16px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' }}
         />
         <button
@@ -46,33 +51,47 @@ function Search() {
           {loading ? 'Searching...' : 'Search'}
         </button>
       </div>
-      {error && (
-        <p style={{ color: 'red', marginBottom: '24px' }}>{error}</p>
+
+      {error && <p style={{ color: 'red', marginBottom: '24px' }}>{error}</p>}
+
+      {searched && results.length === 0 && (
+        <p style={{ color: '#666' }}>No similar items found. Try a different pin!</p>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px' }}>
-        {results.map((item) => (
-          <div key={item.id} style={{ border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden' }}>
-            <img
-              src={item.image_url}
-              alt={item.title}
-              style={{ width: '100%', height: '250px', objectFit: 'cover' }}
-            />
-            <div style={{ padding: '16px' }}>
-              <p style={{ fontSize: '13px', color: '#666', marginBottom: '4px' }}>{item.platform}</p>
-              <p style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px' }}>{item.title}</p>
-              <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>${item.price}</p>
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noreferrer"
-                style={{ display: 'block', textAlign: 'center', padding: '10px', background: '#000', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '14px' }}
-              >
-                View Listing
-              </a>
-            </div>
+
+      {results.length > 0 && (
+        <>
+          <p style={{ color: '#666', marginBottom: '24px', fontSize: '14px' }}>
+            {results.length} similar items found
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px' }}>
+            {results.map((item) => (
+              <div key={item.id} style={{ border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden' }}>
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  style={{ width: '100%', height: '250px', objectFit: 'cover' }}
+                />
+                <div style={{ padding: '16px' }}>
+                  <p style={{ fontSize: '13px', color: '#666', marginBottom: '4px' }}>{item.platform}</p>
+                  <p style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px' }}>{item.title}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <p style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>${item.price}</p>
+                    <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>{Math.round(item.similarity * 100)}% match</p>
+                  </div>
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'block', textAlign: 'center', padding: '10px', background: '#000', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '14px' }}
+                  >
+                    View Listing
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   )
 }

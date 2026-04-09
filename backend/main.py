@@ -9,9 +9,18 @@ import numpy as np
 from sqlalchemy.orm import Session
 from database import get_db, Listing
 from scraper import get_listing_info, is_pinterest_pin, get_image_from_pin
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load model once when server starts
 model = CLIPModel.from_pretrained("patrickjohncyh/fashion-clip")
