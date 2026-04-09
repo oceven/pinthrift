@@ -1,9 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 
+SUPPORTED_PLATFORMS = ["poshmark", "vinted"]
+
+def is_supported_listing(url):
+    return any(platform in url.lower() for platform in SUPPORTED_PLATFORMS)
+
+
 def get_listing_info(listing_url):
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(listing_url, headers=headers)
+    response = requests.get(listing_url, headers=headers)   
     
     if response.status_code != 200:
         raise Exception(f"Failed to fetch listing: {response.status_code}")
@@ -14,6 +20,7 @@ def get_listing_info(listing_url):
     image_tag = soup.find("meta", property="og:image")
     title_tag = soup.find("meta", property="og:title")
     price_tag = soup.find("meta", property="product:price:amount")
+    
 
     image_url = image_tag["content"] if image_tag else None
     title = title_tag["content"] if title_tag else "Unknown title"

@@ -8,7 +8,7 @@ import faiss
 import numpy as np
 from sqlalchemy.orm import Session
 from database import get_db, Listing
-from scraper import get_listing_info, is_pinterest_pin, get_image_from_pin
+from scraper import get_listing_info, is_pinterest_pin, get_image_from_pin, is_supported_listing
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -104,6 +104,10 @@ class ListingRequest(BaseModel):
     
 @app.post("/listings")
 def add_listing(request: ListingRequest, db: Session = Depends(get_db)):
+    
+    if not is_supported_listing(request.listing_url):
+        return {"error": "URL must be a listing from Poshmark or Vinted"}
+    
     try:
         # Scrape listing info
         info = get_listing_info(request.listing_url)

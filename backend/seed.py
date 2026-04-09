@@ -5,6 +5,7 @@ from io import BytesIO
 import requests
 from scraper import get_listing_info
 
+
 model = CLIPModel.from_pretrained("patrickjohncyh/fashion-clip")
 processor = CLIPProcessor.from_pretrained("patrickjohncyh/fashion-clip")
 

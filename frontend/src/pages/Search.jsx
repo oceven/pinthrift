@@ -65,15 +65,43 @@ function Search() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px' }}>
             {results.map((item) => (
-              <div key={item.id} style={{ border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden' }}>
+              <div
+                key={item.id}
+                style={{
+                  border: '1px solid #eee',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
                 <img
                   src={item.image_url}
                   alt={item.title}
-                  style={{ width: '100%', height: '250px', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '250px', objectFit: 'cover', flexShrink: 0 }}
                 />
-                <div style={{ padding: '16px' }}>
+                <div
+                  style={{
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flex: 1,
+                    minHeight: 0,
+                  }}
+                >
                   <p style={{ fontSize: '13px', color: '#666', marginBottom: '4px' }}>{item.platform}</p>
-                  <p style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px' }}>{item.title}</p>
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <p style={{ fontSize: '15px', fontWeight: '500', margin: 0 }}>{item.title}</p>
+                  </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <p style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>${item.price}</p>
                     <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>{Math.round(item.similarity * 100)}% match</p>
@@ -82,7 +110,16 @@ function Search() {
                     href={item.link}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ display: 'block', textAlign: 'center', padding: '10px', background: '#000', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '14px' }}
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      padding: '10px',
+                      background: '#000',
+                      color: '#fff',
+                      borderRadius: '8px',
+                      textDecoration: 'none',
+                      fontSize: '14px',
+                    }}
                   >
                     View Listing
                   </a>
