@@ -1,4 +1,4 @@
-https://download.pytorch.org/whl/cpu/torch-2.1.0%2Bcpu-cp311-cp311-linux_x86_64.whl
+torch==2.1.0
 annotated-doc==0.0.4
 anyio==4.13.0
 certifi==2026.2.25
