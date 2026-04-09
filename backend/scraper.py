@@ -24,3 +24,13 @@ def get_listing_info(listing_url):
         "image_url": image_url,
         "price": price,
     }
+    
+def is_pinterest_pin(url):
+    return "pinterest.com/pin/" in url
+
+def get_image_from_pin(pin_url):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(pin_url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+    image_tag = soup.find("meta", property="og:image")
+    return image_tag["content"] if image_tag else None

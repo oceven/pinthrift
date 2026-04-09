@@ -8,7 +8,7 @@ import faiss
 import numpy as np
 from sqlalchemy.orm import Session
 from database import get_db, Listing
-from scraper import get_listing_info
+from scraper import get_listing_info, is_pinterest_pin, get_image_from_pin
 
 
 app = FastAPI()
@@ -36,11 +36,21 @@ def build_index(db: Session):
     index.add(embeddings)
     return index, listings
 
+
 class PinRequest(BaseModel):
     image_url: str
 
 @app.post("/search")
 def search(request: PinRequest, db: Session = Depends(get_db)):
+    
+    image_url = request.image_url
+    
+    if is_pinterest_pin(image_url):
+        image_url = get_image_from_pin(image_url)
+        print(f"Image URL from Pinterest: {image_url}")
+        if not image_url:
+            return {"error": "Could not extract image from Pinterest pin"}
+        
     # Build index from database
     index, listings = build_index(db)
     
@@ -48,7 +58,7 @@ def search(request: PinRequest, db: Session = Depends(get_db)):
         return {"results": [], "message": "No listings in database yet"}
 
     # Fetch image from URL
-    response = requests.get(request.image_url)
+    response = requests.get(image_url)
     image = Image.open(BytesIO(response.content))
 
     # Generate embedding
