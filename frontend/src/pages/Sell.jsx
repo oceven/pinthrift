@@ -14,7 +14,7 @@ function Sell() {
     setError(null)
     setResult(null)
     try {
-      const response = await axios.post('http://127.0.0.1:8000/listings', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/listings`, {
         listing_url: url,
         platform: platform
       })

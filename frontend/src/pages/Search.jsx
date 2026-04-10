@@ -20,18 +20,24 @@ function Search() {
     }, [])
 
     const handleSearch = async (searchUrl = url) => {
-        if (!searchUrl) return
+        if (!searchUrl){
+            console.log('handleSearch called with:', searchUrl)
+            return} 
         setLoading(true)
         setError(null)
         setResults([])
         setSearched(false)
+        console.log('about to make API call')
         try {
-            const response = await axios.post('http://127.0.0.1:8000/search', {
-                image_url: searchUrl  // make sure this is searchUrl not url
+            console.log('making request to:', `${process.env.REACT_APP_API_URL}/search`)
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/search`, {
+                image_url: searchUrl
             })
+            console.log('response:', response.data)
             setResults(response.data.results)
             setSearched(true)
         } catch (err) {
+            console.log('error:', err)
             setError('Something went wrong. Make sure the URL is a valid Pinterest pin or image URL.')
         } finally {
             setLoading(false)
@@ -55,7 +61,7 @@ function Search() {
                     style={{ flex: 1, padding: '12px 16px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' }}
                 />
                 <button
-                    onClick={handleSearch}
+                    onClick={() => handleSearch()}
                     disabled={loading}
                     style={{ padding: '12px 24px', background: '#000', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}
                 >
