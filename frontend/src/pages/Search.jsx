@@ -10,6 +10,7 @@ function Search() {
     const [searched, setSearched] = useState(false)
 
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const sharedUrl = params.get('url') || params.get('text')
