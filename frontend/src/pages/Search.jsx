@@ -29,8 +29,8 @@ function Search() {
         setSearched(false)
         console.log('about to make API call')
         try {
-            console.log('making request to:', 'http://127.0.0.1:8000/search')
-            const response = await axios.post('http://127.0.0.1:8000/search', {
+            console.log('making request to:', `${process.env.REACT_APP_API_URL}/search`)
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/search`, {
                 image_url: searchUrl
             })
             console.log('response:', response.data)
