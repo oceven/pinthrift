@@ -2,7 +2,7 @@
 title: PinThrift
 emoji: 📌
 colorFrom: red
-colorTo: white
+colorTo: pink
 sdk: docker
 sdk_version: "3.11"
 python_version: "3.11"
