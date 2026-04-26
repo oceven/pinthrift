@@ -33,7 +33,7 @@ def get_listing_info(listing_url):
     }
     
 def is_pinterest_pin(url):
-    return "pinterest.com/pin/" in url
+    return "pinterest.com/pin/" in url or "pin.it/" in url
 
 def get_image_from_pin(pin_url):
     headers = {"User-Agent": "Mozilla/5.0"}
