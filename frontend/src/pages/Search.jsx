@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 function Search() {
     const [url, setUrl] = useState('')
@@ -9,18 +9,7 @@ function Search() {
     const [error, setError] = useState(null)
     const [searched, setSearched] = useState(false)
 
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search)
-        const sharedUrl = params.get('url') || params.get('text')
-        if (sharedUrl) {
-            setUrl(sharedUrl)
-            handleSearch(sharedUrl)
-        }
-    }, [])
-
-    const handleSearch = async (searchUrl = url) => {
+    const handleSearch = useCallback(async (searchUrl = url) => {
         if (!searchUrl){
             console.log('handleSearch called with:', searchUrl)
             return} 
@@ -43,7 +32,16 @@ function Search() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [url])
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        const sharedUrl = params.get('url') || params.get('text')
+        if (sharedUrl) {
+            setUrl(sharedUrl)
+            handleSearch(sharedUrl)
+        }
+    }, [handleSearch])
 
     return (
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '40px 24px' }}>
